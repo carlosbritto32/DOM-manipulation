@@ -3,4 +3,48 @@
  * When you're ready to start on your site, clear the file. Happy hacking!
  **/
 
-console.log('Happy hacking :)')
+const baseUrl = "https://platzi-avo.vercel.app";
+
+const appNode = document.querySelector("#app");
+
+const formatPrice = (price) => {
+  const newPrice = new window.Intl.NumberFormat("en-EN", {
+    style: "currency",
+    currency: "USD",
+  }).format(price);
+
+  return newPrice;
+};
+
+// web api
+//  contectar al server
+window
+  .fetch(`${baseUrl}/api/avo`)
+  // procesar la respuesta, y convertirla en JSON
+  .then((respuesta) => respuesta.json())
+  // JSON -> data ->renderizar browser
+  .then((responseJson) => {
+    const allItems = [];
+
+    responseJson.data.forEach((item) => {
+      const image = document.createElement("img");
+      image.className =
+        "h-16 w-16 md:h-24 md:w-24 rounded-full mx-auto md:mx-0 md:mr-6";
+      image.src = `${baseUrl}${item.image}`;
+
+      const title = document.createElement("h2");
+      title.className = "text-lg";
+      title.textContent = item.name;
+
+      const price = document.createElement("div");
+      price.className = "text-gray-600";
+      price.textContent = formatPrice(item.price);
+
+      const container = document.createElement("div");
+      container.append(image, title, price);
+
+      allItems.push(container);
+    });
+
+    appNode.append(...allItems);
+  });
